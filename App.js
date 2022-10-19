@@ -92,17 +92,6 @@ function UserScreen({ navigation }) {
       {errors.user?.type == "maxLength" && <Text style={{ color: 'red', fontSize: 15 }}>El usuario debe tener maximo 12 caracteres</Text>}
       {errors.user?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>El nombre debe tener solo letras</Text>}
 
-      <Picker
-        selectedValue={rol}
-        style={styles.pickerStyle}
-        onValueChange={(itemValue, itemIndex) => setRol(itemValue)}
-      >
-
-        <Picker.Item label="Administrador" value="adm" />
-        <Picker.Item label="Usuario" value="user" />
-
-      </Picker>
-
       <Controller
         control={control}
         rules={{
@@ -122,6 +111,17 @@ function UserScreen({ navigation }) {
       />
       {errors.password?.type == "required" && <Text style={{ color: 'red', fontSize: 15 }}>La contraseña es obligatoria</Text>}
       {/* {errors.password?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>Debe tener numeros,letra minuscula y mayuscula,punto y caracter especial, sin espacios, maximo 15 caracteres</Text>} */}
+
+      <Picker
+        selectedValue={rol}
+        style={styles.pickerStyle}
+        onValueChange={(itemValue, itemIndex) => setRol(itemValue)}
+      >
+
+        <Picker.Item label="Administrador" value="adm" />
+        <Picker.Item label="Usuario" value="user" />
+
+      </Picker>
 
       <TouchableOpacity
         style={{ backgroundColor: 'green', padding: 10, borderRadius: 10, marginTop: 10, width: 180 }}
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderWidth: 2,
     borderColor: 'green',
-    padding: 10,
+    padding: 9,
     borderRadius: 10,
     marginTop:5,
     marginBottom: 5,
