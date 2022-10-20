@@ -181,7 +181,7 @@ function ProfileScreen({ navigation, route }) {
         rules={{
           required: true,
           minLength: 3,
-          pattern: /^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/g
+          pattern: /^[0-9,$]*$/
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput style={[styles.inputs, {
@@ -198,7 +198,7 @@ function ProfileScreen({ navigation, route }) {
         )}
         name='identification'
       />
-
+      {errors.identification?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>la identificacion debe ser solo numeros</Text>}
 
       <Text>Titular de cuenta</Text>
       <TextInput style={styles.inputs}
