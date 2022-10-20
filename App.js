@@ -9,7 +9,7 @@ import { useState } from 'react';
 const Tab = createBottomTabNavigator();
 
 function UserScreen({ navigation }) {
-  const [rol, setRol] = useState("admin");
+  const [role, setRol] = useState('admin');
   /* const [user, setUser] = useState(''); */
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -21,19 +21,20 @@ function UserScreen({ navigation }) {
 
   const onSubmit = data => {
     console.log(data);
-  }
+    /* navigation.navigate('Profile'); */
+    console.log(role);
 
-  const validate = () => {
     const users = [
       { user: 'Sandro', rol: 'admin', password: 'Sa#1.' },
       { user: 'Linda', rol: 'user', password: 'Li#2.' },
-    ];
+    ]
 
-    if (rol == 'admin') {
-      let usuarioBuscado = users.find(user => (user.user == data.user))
-      if (usuarioBuscado != undefined) {
-        if (usuarioBuscado.rol == 'admin') {
-          if (usuarioBuscado.password == data.password) {
+    if (role == 'admin') {
+      console.log('llego')
+      let usersSearch = users.find(mem => (mem.user == data.user))
+      if (usersSearch != undefined) {
+        if (usersSearch.rol == 'admin') {
+          if (usersSearch.password == data.password) {
 
             let aleatorio;
             let cuenta;
@@ -41,25 +42,32 @@ function UserScreen({ navigation }) {
               aleatorio = Math.random() * 2000000;
             } while (aleatorio < 1000000)
             cuenta = Math.floor(aleatorio);
-            setNumeroCuenta(cuenta);
+            /* setNumeroCuenta(cuenta); */
             alert("Bienvenido(a) " + data.user);
-            console.log("bienvennido(a): " + data.user);
-            console.log(rol);
-            navigation.navigate('Cuenta', { nombre: data.user, cuenta: numeroCuenta })
+            console.log("bienvenido(a): " + data.user);
+            console.log('Llega Hasta ACA');
+            navigation.navigate('Cuenta', /* { nombre: data.user, cuenta: numeroCuenta } */)
 
-          } else {
+          }
+          else {
             alert("por favor verifique su contraseña");
           }
-        } else {
-          alert(data.usuario + " tiene rol de usuario");
         }
-      } else {
+        else {
+          alert(data.user + " tiene rol de usuario");
+
+
+        }
+      }
+      else {
         alert("Verfique que su usuario y/o contraseñan sean correctos");
       };
-    } else {
+    }
+    else {
       alert("El usuario ingresado no tiene rol de administrador");
     }
   }
+
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -101,7 +109,7 @@ function UserScreen({ navigation }) {
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput style={styles.inputs}
             placeholder="Contraseña"
-            secureTextEntry={true}
+            secureTextEntry={false}
             onChange={onChange}
             onBlur={onBlur}
             value={value}
@@ -113,12 +121,12 @@ function UserScreen({ navigation }) {
       {/* {errors.password?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>Debe tener numeros,letra minuscula y mayuscula,punto y caracter especial, sin espacios, maximo 15 caracteres</Text>} */}
 
       <Picker
-        selectedValue={rol}
+        selectedValue={role}
         style={styles.pickerStyle}
         onValueChange={(itemValue, itemIndex) => setRol(itemValue)}
       >
 
-        <Picker.Item label="Administrador" value="adm" />
+        <Picker.Item label="Administrador" value="admin" />
         <Picker.Item label="Usuario" value="user" />
 
       </Picker>
@@ -134,33 +142,33 @@ function UserScreen({ navigation }) {
   );
 }
 
+
+
 function ProfileScreen({ route }) {
   return (
     <View style={styles.container}>
-      <Text>Perfil: {route.params.user}</Text>
-    </View>
-  );
-}
-
-function AccountScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>Cuentas</Text>
-    </View>
-  );
-}
-
-function SettingsScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>Configuración</Text>
-      <Button
-        title="Perfil"
-        onPress={() => navigation.navigate('Feed')}
+      <Text>cuenta usuario</Text>
+      <TextInput style={styles.inputs}
+        placeholder="Contraseña"
+        secureTextEntry={false}
+        onChange={onChange}
+        onBlur={onBlur}
+        value={value}
       />
+
+
     </View>
   );
 }
+
+function AccountScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text>Pronto Estara Disponible, Disculpe las molestias</Text>
+    </View>
+  );
+}
+
 
 
 function HomeTabs() {
@@ -213,7 +221,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeTabs} options={{ title: 'Sistema Bancario' }} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        {/* <Stack.Screen name="Settings" component={SettingsScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -242,7 +250,7 @@ const styles = StyleSheet.create({
     borderColor: 'green',
     padding: 9,
     borderRadius: 10,
-    marginTop:5,
+    marginTop: 5,
     marginBottom: 5,
     width: 185,
     fontSize: 15,
