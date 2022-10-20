@@ -15,7 +15,8 @@ function UserScreen({ navigation }) {
     defaultValues: {
       user: '',
       rol: '',
-      password: '',
+      password: ''
+      
     }
   });
 
@@ -37,16 +38,16 @@ function UserScreen({ navigation }) {
           if (usersSearch.password == data.password) {
 
             let aleatorio;
-            let cuenta;
+            let account;
             do {
               aleatorio = Math.random() * 2000000;
             } while (aleatorio < 1000000)
             cuenta = Math.floor(aleatorio);
-            /* setNumeroCuenta(cuenta); */
+            setNumeroCuenta(account);
             alert("Bienvenido(a) " + data.user);
             console.log("bienvenido(a): " + data.user);
             console.log('Llega Hasta ACA');
-            navigation.navigate('Cuenta', /* { nombre: data.user, cuenta: numeroCuenta } */)
+            navigation.navigate('Cuenta',  /* nombre: data.user, cuenta: numeroCuenta } */)
 
           }
           else {
@@ -107,7 +108,8 @@ function UserScreen({ navigation }) {
           /* pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){5,15}$/ */
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput style={styles.inputs}
+          <TextInput
+            style={styles.inputs}
             placeholder="Contraseña"
             secureTextEntry={false}
             onChange={onChange}
@@ -144,18 +146,79 @@ function UserScreen({ navigation }) {
 
 
 
-function ProfileScreen({ route }) {
+function ProfileScreen({ navigation, route }) {
+
+  /* const { nombre, account } = route.params; */
+  const [datosUsuario, setDatosUsuario] = useState([]);
+  const { control, reset, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      account: '',
+      identification: '',
+      account_holder: '',
+      date: '',
+      balance: ''
+    },
+  });
+
+  const onSubmit = data => {
+    reset();
+    setVista(true);
+    setDatosUsuario(data);
+  }
+
   return (
     <View style={styles.container}>
-      <Text>cuenta usuario</Text>
-      <TextInput style={styles.inputs}
-        placeholder="Contraseña"
-        secureTextEntry={false}
-        onChange={onChange}
-        onBlur={onBlur}
-        value={value}
+
+      <Text style={styles.label}>Numero de cuenta</Text>
+      <View style={styles.inputs}>
+        <TextInput style={styles.picker} /* placeholder={cuenta} */>
+        </TextInput>
+      </View>
+
+      <Text>identificacion</Text>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+          minLength: 3,
+          pattern: /^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/g
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput style={[styles.inputs, {
+            borderColor: errors.identification?.type == 'required' || errors.identification?.type == 'pattern' || errors.identification?.
+              type == 'maxLength' || errors.identification?.type == 'minLength' ? 'red' : 'green'
+          }]}
+
+            placeholder="Identificacion"
+            onChange={onChange}
+            value={value}
+            onBlur={onBlur}
+
+          />
+        )}
+        name='identification'
       />
 
+
+      <Text>Titular de cuenta</Text>
+      <TextInput style={styles.inputs}
+        placeholder="Titular de Cuentas"
+      />
+      <Text>Fecha</Text>
+      <TextInput style={styles.inputs}
+        placeholder="Fecha"
+      />
+      <Text>Saldo</Text>
+      <TextInput style={styles.inputs}
+        placeholder="Saldo"
+      />
+
+      <TouchableOpacity
+        style={{ backgroundColor: 'green', padding: 10, borderRadius: 10, marginTop: 10, width: 180 }}
+        onPress={handleSubmit(onSubmit)}
+      >
+        <Text style={{ color: 'white', textAlign: 'center' }}>Iniciar Sesión</Text>
+      </TouchableOpacity>
 
     </View>
   );
