@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,7 +16,7 @@ function UserScreen({ navigation }) {
       user: '',
       rol: '',
       password: ''
-      
+
     }
   });
 
@@ -42,12 +42,12 @@ function UserScreen({ navigation }) {
             do {
               aleatorio = Math.random() * 2000000;
             } while (aleatorio < 1000000)
-            cuenta = Math.floor(aleatorio);
-            setNumeroCuenta(account);
+            account = Math.floor(aleatorio);
+            /* setNumeroCuenta(account); */
             alert("Bienvenido(a) " + data.user);
             console.log("bienvenido(a): " + data.user);
             console.log('Llega Hasta ACA');
-            navigation.navigate('Cuenta',  /* nombre: data.user, cuenta: numeroCuenta } */)
+            navigation.navigate('Profile')
 
           }
           else {
@@ -56,8 +56,6 @@ function UserScreen({ navigation }) {
         }
         else {
           alert(data.user + " tiene rol de usuario");
-
-
         }
       }
       else {
@@ -105,13 +103,13 @@ function UserScreen({ navigation }) {
         control={control}
         rules={{
           required: true,
-          /* pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){5,15}$/ */
+          pattern: /^(?=(?:.*\d))(?=.*[A-Z])(?=.*[a-z])(?=.*[.,*!?¿¡/#$%&])\S{4,12}$/
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={styles.inputs}
             placeholder="Contraseña"
-            secureTextEntry={false}
+            secureTextEntry={true}
             onChange={onChange}
             onBlur={onBlur}
             value={value}
@@ -120,7 +118,7 @@ function UserScreen({ navigation }) {
         name='password'
       />
       {errors.password?.type == "required" && <Text style={{ color: 'red', fontSize: 15 }}>La contraseña es obligatoria</Text>}
-      {/* {errors.password?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>Debe tener numeros,letra minuscula y mayuscula,punto y caracter especial, sin espacios, maximo 15 caracteres</Text>} */}
+      {errors.password?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>Debe tener numeros,letra minuscula y mayuscula,punto y caracter especial, sin espacios, maximo 15 caracteres</Text>}
 
       <Picker
         selectedValue={role}
@@ -148,7 +146,7 @@ function UserScreen({ navigation }) {
 
 function ProfileScreen({ navigation, route }) {
 
-  /* const { nombre, account } = route.params; */
+  /* const { name, account, estado, setEstado } = route.params; */
   const [datosUsuario, setDatosUsuario] = useState([]);
   const { control, reset, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -162,7 +160,6 @@ function ProfileScreen({ navigation, route }) {
 
   const onSubmit = data => {
     reset();
-    setVista(true);
     setDatosUsuario(data);
   }
 
@@ -171,7 +168,7 @@ function ProfileScreen({ navigation, route }) {
 
       <Text style={styles.label}>Numero de cuenta</Text>
       <View style={styles.inputs}>
-        <TextInput style={styles.picker} /* placeholder={cuenta} */>
+        <TextInput style={styles.picker} /* placeholder={account} */>
         </TextInput>
       </View>
 
@@ -181,49 +178,134 @@ function ProfileScreen({ navigation, route }) {
         rules={{
           required: true,
           minLength: 3,
+          maxLength: 15,
           pattern: /^[0-9,$]*$/
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput style={[styles.inputs, {
-            borderColor: errors.identification?.type == 'required' || errors.identification?.type == 'pattern' || errors.identification?.
-              type == 'maxLength' || errors.identification?.type == 'minLength' ? 'red' : 'green'
-          }]}
+          <TextInput
+            style={[styles.inputs, {
+              borderColor: errors.identification?.type == 'required' || errors.identification?.type == 'pattern' || errors.identification?.type == 'maxLength' || errors.identification?.type == 'minLength' ? 'red' : 'green'
+            }]}
 
-            placeholder="Identificacion"
             onChange={onChange}
             value={value}
             onBlur={onBlur}
+            placeholder='ingrese Identificion'
 
           />
         )}
         name='identification'
       />
       {errors.identification?.type == "pattern" && <Text style={{ color: 'red', fontSize: 15 }}>la identificacion debe ser solo numeros</Text>}
+      {errors.identification?.type == "minLength" && <Text style={{ color: 'red', fontSize: 15 }}>Se permite maximo 12 numeros</Text>}
 
       <Text>Titular de cuenta</Text>
-      <TextInput style={styles.inputs}
-        placeholder="Titular de Cuentas"
+      <Controller
+        control={control}
+        rules={{
+          required: "Campo obligatorio.",
+          maxLength: { value: 100, message: "Se permite maximo 100 letras" },
+          minLength: { value: 3, message: "Se permite minimo 3 letras" },
+          pattern: {
+            value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/, message:
+              "Solo se permiten letras",
+          },
+        }}
+
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={[styles.inputs, { borderColor: errors.account_holder ? 'red' : 'green' }]}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            placeholder="Ingrese titular cuenta"
+          />
+        )}
+        name="account_holder"
       />
+      {errors.account_holder && <Text style={{ color: 'red', fontSize: 15 }}>{errors.account_holder.message}</Text>}
+
       <Text>Fecha</Text>
-      <TextInput style={styles.inputs}
-        placeholder="Fecha"
+      <Controller
+        control={control}
+        rules={{
+          required: "El fecha es obligatoria.",
+          pattern: {
+            value: /^(0?[1-9]|1[012])[\/](0?[1-9]|[12][0-9]|3[01])[\/]\d{4}$/, message:
+              "Formato mm/dd/yyyy",
+          },
+        }}
+
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={[styles.inputs, { borderColor: errors.date ? 'red' : 'green' }]}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            placeholder="MM/DD/YYYY"
+          />
+        )}
+        name="date"
       />
+      {errors.date && <Text style={{ color: 'red', fontSize: 15 }}>{errors.date.message}</Text>}
+
+
       <Text>Saldo</Text>
-      <TextInput style={styles.inputs}
-        placeholder="Saldo"
+      <Controller
+        control={control}
+        rules={{
+          required: "El saldo es obligatorio.",
+          max: { value: 100000000, message: "Se permite maximo 100 millones" },
+          min: { value: 1000000, message: "Se permite minimo 1 millon" },
+          pattern: {
+            value: /^[0-9]*$/, message:
+              "Solo se permiten numeros",
+          },
+        }}
+
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={[styles.inputs, { borderColor: errors.balance ? 'red' : 'green' }]}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            placeholder="Ingrese saldo"
+          />
+        )}
+        name="balance"
       />
+      {errors.balance && <Text style={{ color: 'red', fontSize: 15 }}>{errors.balance.message}</Text>}
 
       <TouchableOpacity
         style={{ backgroundColor: 'green', padding: 10, borderRadius: 10, marginTop: 10, width: 180 }}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text style={{ color: 'white', textAlign: 'center' }}>Iniciar Sesión</Text>
+        <Text style={{ color: 'white', textAlign: 'center' }}>Enviar</Text>
       </TouchableOpacity>
 
-    </View>
-  );
-}
 
+      <View style={{ marginTop: 7, backgroundColor: '#f5f5f5', borderRadius: 10, borderColor: 'green', borderWidth: 3 }}>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={{ fontSize: 20, fontWeight: 2 }}>INFORMACION DE LA CUENTA</Text>
+        </View>
+        <View>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            {/* <Text style={styles.datosUsuario}>Nro Cuenta: {account}</Text> */}
+            <Text style={styles.datosUsuario}>Identificacion: {datosUsuario.identification}</Text>
+
+            <Text style={styles.datosUsuario}>Fecha: {datosUsuario.date}</Text>
+          </View>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+            <Text style={styles.datosUsuario}>Titular: {datosUsuario.account_holder}</Text>
+            <Text style={styles.datosUsuario}>Saldo: {datosUsuario.balance}</Text>
+          </View>
+        </View>
+      </View>
+
+    </View>
+
+  )
+}
 function AccountScreen({ navigation }) {
   return (
     <View style={styles.container}>
@@ -245,7 +327,7 @@ function HomeTabs() {
         name="User"
         component={UserScreen}
         options={{
-          tabBarStyle: { /* display: "none" */ },
+          tabBarStyle: {display: "none"},
           title: 'Inic.Sesion', tabBarIcon: ({ color, size }) => (
             <Ionicons name="body-outline" color={color} size={30} />
           )
@@ -317,5 +399,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     width: 185,
     fontSize: 15,
+  },
+  datosUsuario: {
+    marginLeft: 6,
+    marginRight: 6,
+    fontSize: 15,
+    fontWeight: 1,
+    padding: 3,
+    flexDirection:'column',
   }
 });
